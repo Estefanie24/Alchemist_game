@@ -9,3 +9,9 @@ Changes:
 - Removed Copy the Gesture from the main game menu as requested.
 
 Deployment: upload all files and the full assets folder, preserving the relative paths. Test over HTTPS, allow camera permission, and use good lighting.
+
+
+Temporary change: Guatemala Sign Language has been removed from the home menu and standalone section. Copy the Gesture remains removed. Sorter and Grab & Drop instructions now explain the camera-overlay targets and pinch/release controls.
+
+
+Latest update: Guatemala Sign Language is temporarily hidden/removed from the home page. Ball and food targets are drawn over the camera feed and their floating markers speed up as the round progresses. Grab & Drop instructions now describe pinch-to-grab, drag while pinching, and open fingers to release. Two-Player Sorter uses the upper-left and lower-right camera targets.
