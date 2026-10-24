@@ -14,7 +14,6 @@ Level-up options added
 Existing modes retained
 - Ball Sorter
 - Two-Hand Duel
-- Copy the Gesture
 - Arcane Alchemist Potion Lab
 
 Run / deploy
