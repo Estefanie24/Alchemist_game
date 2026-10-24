@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arcane Alchemist — Hand Gesture Potion Game</title>
+<style>
+:root{--gold:#f4c879;--violet:#6d43ad;--ink:#100c24;--panel:rgba(21,15,44,.91);--cyan:#6ff8f0}
+*{box-sizing:border-box}body{margin:0;background:#100b22;color:#fff6e7;font-family:Georgia,'Times New Roman',serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 25%,#293b76 0,#15112f 42%,#080711 100%)}
+button{font:inherit;cursor:pointer;border:1px solid #f4c87988;color:#fff5dc;background:linear-gradient(135deg,#56338b,#21143e);border-radius:12px;padding:12px 18px;box-shadow:0 0 18px #6d43ad33}
+button:hover{filter:brightness(1.2)}button:disabled{opacity:.45;cursor:not-allowed}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(12px,3vw,32px);border-bottom:1px solid #e9c17644;background:#100b22bb}
+.brand{font-size:clamp(20px,3vw,30px);font-weight:bold;letter-spacing:.04em;color:var(--gold)}.sub{font:12px system-ui;color:#c4b8e5;letter-spacing:.12em;text-transform:uppercase}
+.stats{display:flex;gap:10px}.stat{border:1px solid #e9c17666;background:#1a1234;padding:8px 14px;border-radius:12px;min-width:82px;text-align:center}.stat small{display:block;color:#c9b8e9;font:11px system-ui;text-transform:uppercase}.stat strong{font-size:22px;color:var(--gold)}
+main{max-width:1450px;margin:auto;padding:18px;display:grid;grid-template-columns:minmax(220px,290px) minmax(300px,1fr) minmax(220px,290px);gap:16px}
+.panel{background:var(--panel);border:1px solid #e9c17655;border-radius:18px;padding:17px;box-shadow:0 12px 40px #0005;min-width:0}.panel h2{margin:0 0 13px;color:var(--gold);font-size:21px}.muted{color:#c4b8e5;font:13px/1.5 system-ui}
+.recipe{display:flex;gap:10px;align-items:flex-start;margin:13px 0;padding:10px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff12}.recipe .num{font-size:23px;width:34px;height:34px;display:grid;place-items:center;background:#332451;border-radius:10px}.recipe.done{border-color:#6ff8f077;background:#123a3977}.recipe.active{border-color:var(--gold);box-shadow:0 0 16px #f4c87922}.recipe b{display:block;margin-bottom:4px}.recipe small{color:#c4b8e5;font:12px system-ui}
+.stage{position:relative;min-height:480px;overflow:hidden;border-radius:20px;border:1px solid #d9b56a88;background:linear-gradient(180deg,rgba(13,7,28,.22),rgba(13,7,28,.88)),url('assets/cauldron-workbench.jpg') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.stage:before,.stage:after{content:"✦  ·  ✧  ·  ✦";position:absolute;color:#e6c77eaa;font-size:25px;letter-spacing:18px;pointer-events:none;z-index:1}.stage:before{top:15px}.stage:after{bottom:15px}
+.moon{font-size:38px;filter:drop-shadow(0 0 14px #86e9ff);z-index:2}.stage>*{z-index:2}.stage:after{z-index:1}.cauldron{font-size:clamp(95px,14vw,160px);line-height:1.2;filter:drop-shadow(0 12px 18px #05030c);margin:5px;background:rgba(14,8,31,.36);border-radius:50%;padding:0 22px}.potion{height:9px;width:min(75%,360px);border-radius:10px;background:#ffffff22;overflow:hidden;border:1px solid #ffffff33}.potion span{display:block;height:100%;width:0;background:linear-gradient(90deg,#49f5de,#9d77ff,#f4c879);transition:width .4s}
+.stageTitle{font-size:clamp(23px,3vw,34px);text-align:center;color:#fff0c9;margin:8px 0}.status{font:14px/1.5 system-ui;text-align:center;color:#d8d0ef;max-width:460px;min-height:42px}.stageBtns{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.gestures{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:15px}.gesture{background:#100b25aa;border:1px solid #e9c17644;border-radius:12px;text-align:center;padding:10px 5px;color:#d8d0ef;font:12px system-ui}.gesture span{display:block;font-size:26px;margin-bottom:5px}.gesture.active{border-color:var(--cyan);box-shadow:0 0 16px #6ff8f055;color:white}
+.magePortrait{position:relative;overflow:hidden;border:1px solid #8feaff66;border-radius:14px;margin-bottom:12px;height:145px;background:#11152c}.magePortrait img{width:100%;height:100%;object-fit:cover;object-position:24% 28%;opacity:.96}.characterPortrait{height:190px;background:#171124}.magePortrait div{position:absolute;left:0;right:0;bottom:0;padding:18px 10px 8px;background:linear-gradient(transparent,#090817ee);font-size:14px}.magePortrait small{display:block;color:#a8eaff;font:11px system-ui;margin-top:3px}.cameraWrap{position:relative;width:100%;aspect-ratio:4/3;background:#05050d;border:1px solid #a58bdc66;border-radius:14px;overflow:hidden}.cameraWrap video,.cameraWrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.cameraWrap canvas{pointer-events:none}.cameraLabel{position:absolute;left:8px;bottom:8px;background:#080717cc;padding:6px 9px;border-radius:8px;font:12px system-ui}
+.detect{font:14px system-ui;margin:12px 0;padding:10px;border-radius:10px;background:#ffffff09}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff7272;margin-right:7px}.dot.on{background:#6ff8a7;box-shadow:0 0 8px #6ff8a7}
+.potionCard{margin-top:15px;padding:15px;text-align:center;border:1px solid #e9c17644;border-radius:14px;background:linear-gradient(145deg,#1c1841,#0d1025)}.bottle{font-size:60px;filter:drop-shadow(0 0 15px #4dffc5)}.potionCard h3{color:var(--gold);margin:4px 0}.fact{font:12px/1.5 system-ui;color:#c4b8e5}
+footer{text-align:center;padding:0 16px 24px;color:#a99dc8;font:12px/1.5 system-ui}
+#overlay{position:fixed;inset:0;background:#080615dd;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}#overlay.hidden{display:none}.modal{max-width:520px;background:#1b1435;border:1px solid var(--gold);border-radius:20px;padding:28px;text-align:center;box-shadow:0 0 60px #5b36a955}.modal h1{color:var(--gold);margin-top:0}.modal p{font:14px/1.7 system-ui;color:#ded6f3}.modal .big{font-size:44px}
+@media(max-width:1000px){main{grid-template-columns:1fr 1fr}.stage{grid-column:1/-1;grid-row:1;min-height:390px}.left{grid-column:1}.right{grid-column:2}}
+@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.stats{width:100%}.stat{flex:1}main{display:flex;flex-direction:column;padding:10px}.stage{order:0;min-height:380px}.left{order:1}.right{order:2}.gestures{grid-template-columns:repeat(2,1fr)}.panel{padding:14px}}
+.gestureLabel{font-size:clamp(28px,5vw,48px);font-weight:950;letter-spacing:.07em;text-align:center;color:#baffff;text-shadow:0 0 6px #00f5ff,0 0 16px #00f5ff,0 0 30px #00aaff;margin:12px 0;padding:10px 6px;border:1px solid #00f5ff66;border-radius:12px;background:#00f5ff18}.gestureLabel.nohand{color:#ffb5c0;text-shadow:0 0 8px #ff3158,0 0 18px #ff3158;border-color:#ff315866}</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">✦ ARCANE ALCHEMIST</div><div class="sub">A hand-controlled potion adventure</div></div>
+  <div class="stats"><div class="stat"><small>Score</small><strong id="score">0</strong></div><div class="stat"><small>Time</small><strong id="time">60</strong></div><div class="stat"><small>Potions</small><strong id="potions">0 / 3</strong></div></div>
+</header>
+<main>
+  <section class="panel left">
+    <h2>📜 Spellbook</h2>
+    <p class="muted">Follow the recipe in order. Hold each gesture steady until the magic locks in.</p>
+    <div id="recipeList"></div>
+    <div class="potionCard"><div class="bottle" id="bottle">⚗️</div><h3 id="potionName">Healing Elixir</h3><div class="fact" id="potionFact">A bright green brew for restoring magical energy.</div></div>
+  </section>
+  <section class="stage">
+    <div class="moon">☾ ✧ ✦ ☽</div><div class="cauldron" id="cauldron">⚗️</div>
+    <div class="stageTitle" id="stageTitle">Your cauldron awaits</div>
+    <div class="potion" aria-label="Potion progress"><span id="progress"></span></div>
+    <p class="status" id="message">Start the camera, then make an OPEN PALM to draw the magic circle.</p>
+    <div class="stageBtns"><button id="startBtn">Start Camera & Play</button><button id="restartBtn">Restart Quest</button></div>
+    <div class="gestures">
+      <div class="gesture" id="g-open"><span>🖐️</span>Open palm<br><small>Magic circle</small></div>
+      <div class="gesture" id="g-pinch"><span>🤏</span>Pinch<br><small>Add essence</small></div>
+      <div class="gesture" id="g-fist"><span>✊</span>Fist<br><small>Stir</small></div>
+      <div class="gesture" id="g-peace"><span>✌️</span>Peace sign<br><small>Seal potion</small></div>
+    </div>
+  </section>
+  <section class="panel right">
+    <h2>🔮 Hand Portal</h2><div class="magePortrait characterPortrait"><img src="assets/elemental-scrolls.jpg" alt="Provided hooded rogue alchemist character art"><div><b>The Rogue Alchemist</b><small>Your playable potion master · Arcane craft</small></div></div>
+    <div class="cameraWrap"><video id="video" autoplay playsinline muted><div id="gestureLabel" class="gestureLabel nohand">NO HAND</div></video><canvas id="canvas"></canvas><div class="cameraLabel" id="cameraLabel">Camera offline</div></div>
+    <div class="detect"><span class="dot" id="dot"></span><b id="gestureName">No hand detected</b><div class="muted" id="gestureHelp">Show one hand clearly to the camera.</div></div>
+    <p class="muted">Best results: bright light on your hand, whole hand visible, camera at arm’s length. Allow camera access when asked.</p>
+    <button id="soundBtn" style="width:100%">🔊 Sound: On</button>
+  </section>
+</main>
+<footer>Camera processing runs in your browser using MediaPipe. Use HTTPS or localhost. Camera access requires your permission.</footer>
+<div id="overlay"><div class="modal"><div class="big">🧙‍♀️ ✨ ⚗️</div><h1>The Alchemist’s Trial</h1><p>Three magical brews. Four hand signs. No buttons needed once the ritual begins.<br><br><b>🖐️ Open palm</b> — draw the circle<br><b>🤏 Pinch</b> — add the essence<br><b>✊ Fist</b> — stir the brew<br><b>✌️ Peace sign</b> — seal the potion</p><button id="beginBtn">Enter the Alchemy Lab</button></div></div>
+<script type="module">
+import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const $=id=>document.getElementById(id);
+const video=$("video"), canvas=$("canvas"), ctx=canvas.getContext("2d");
+let landmarker=null, stream=null, running=false, soundOn=true, score=0, seconds=60, timer=null, lastVideoTime=-1;
+let currentRecipe=0, step=0, potionsDone=0, holdStart=0, lastLockedAt=0, stableGesture="", stableFrames=0, gameOver=false;
+const recipes=[
+ {name:"Healing Elixir",color:"#69f7a8",fact:"A bright green brew for restoring magical energy.",steps:[["open","Draw the magic circle","🖐️"],["pinch","Add the blue essence","🤏"],["fist","Stir the potion","✊"],["peace","Seal the potion","✌️"]]},
+ {name:"Moonlight Draught",color:"#78dfff",fact:"A cool blue potion distilled from moonbeams.",steps:[["open","Draw the magic circle","🖐️"],["pinch","Add the silver essence","🤏"],["fist","Stir beneath the moon","✊"],["peace","Seal the moonlight","✌️"]]},
+ {name:"Phoenix Tonic",color:"#ff9b58",fact:"An amber potion inspired by the rebirth of the phoenix.",steps:[["open","Draw the fire circle","🖐️"],["pinch","Add the ember essence","🤏"],["fist","Stir the flames","✊"],["peace","Seal the phoenix spark","✌️"]]}
+];
+const fingerTips=[8,12,16,20], fingerPips=[6,10,14,18];
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function classify(lm){
+ if(!lm||lm.length<21)return "none";
+ const up=fingerTips.map((t,i)=>lm[t].y<lm[fingerPips[i]].y-.025);
+ const count=up.filter(Boolean).length;
+ const pinch=dist(lm[4],lm[8])<.065;
+ if(pinch && (dist(lm[4],lm[8])<dist(lm[4],lm[6])*.8))return "pinch";
+ if(count===0)return "fist";
+ if(up[0]&&up[1]&&!up[2]&&!up[3])return "peace";
+ if(count>=3)return "open";
+ return "unknown";
+}
+
+function updateGestureLabel(lm){
+ const el=document.getElementById("gestureLabel");if(!el)return;
+ let label="NO HAND";
+ if(lm&&lm.length>=21){
+  const i=lm[8].y<lm[6].y-.025,m=lm[12].y<lm[10].y-.025,r=lm[16].y<lm[14].y-.025,p=lm[20].y<lm[18].y-.025;
+  const t=Math.hypot(lm[4].x-lm[2].x,lm[4].y-lm[2].y)>.12;
+  if(!t&&!i&&!m&&!r&&!p)label="FIST";
+  else if(i&&m&&!r&&!p)label="PEACE";
+  else if(t&&!i&&!m&&!r&&!p)label="THUMBS UP";
+  else if(i&&m&&r&&p)label="OPEN PALM";
+ }
+ el.textContent=label;el.classList.toggle("nohand",label==="NO HAND");
+}
+
+function drawHand(lm){
+ updateGestureLabel(lm);
+ canvas.width=video.videoWidth||640;canvas.height=video.videoHeight||480;ctx.clearRect(0,0,canvas.width,canvas.height);
+ if(!lm||lm.length<21)return;
+ const edges=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+ ctx.save();ctx.lineCap="round";ctx.lineJoin="round";
+ // Neon glow beneath each bone connection.
+ ctx.strokeStyle="rgba(0,245,255,.48)";ctx.lineWidth=8;ctx.shadowColor="#00f5ff";ctx.shadowBlur=18;
+ edges.forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(lm[a].x*canvas.width,lm[a].y*canvas.height);ctx.lineTo(lm[b].x*canvas.width,lm[b].y*canvas.height);ctx.stroke()});
+ // Crisp luminous core lines.
+ ctx.strokeStyle="#70fff4";ctx.lineWidth=2.8;ctx.shadowBlur=7;
+ edges.forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(lm[a].x*canvas.width,lm[a].y*canvas.height);ctx.lineTo(lm[b].x*canvas.width,lm[b].y*canvas.height);ctx.stroke()});
+ // Growing energy orb between thumb and index fingertips; pinch causes a bright flash.
+ const tx=lm[4].x*canvas.width,ty=lm[4].y*canvas.height,ix=lm[8].x*canvas.width,iy=lm[8].y*canvas.height;
+ const distance=Math.hypot(ix-tx,iy-ty),ox=(tx+ix)/2,oy=(ty+iy)/2;
+ const pinch=distance/Math.min(canvas.width,canvas.height)<.055;
+ const radius=Math.max(7,Math.min(58,distance*.43));
+ ctx.save();ctx.globalCompositeOperation="lighter";ctx.shadowColor=pinch?"#fff4a8":"#55f6ff";ctx.shadowBlur=pinch?38:24;
+ const gradient=ctx.createRadialGradient(ox-radius*.18,oy-radius*.2,1,ox,oy,radius);
+ if(pinch){gradient.addColorStop(0,"#ffffff");gradient.addColorStop(.28,"#fff5b8");gradient.addColorStop(.65,"#ffbaff");gradient.addColorStop(1,"rgba(125,76,255,0)")}
+ else{gradient.addColorStop(0,"rgba(255,255,255,.98)");gradient.addColorStop(.22,"rgba(112,255,248,.95)");gradient.addColorStop(.58,"rgba(35,184,255,.56)");gradient.addColorStop(1,"rgba(0,245,255,0)")}
+ ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(ox,oy,radius,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle=pinch?"rgba(255,248,190,.95)":"rgba(140,255,255,.9)";ctx.lineWidth=pinch?3:1.8;ctx.beginPath();ctx.arc(ox,oy,Math.max(3,radius*.48),0,Math.PI*2);ctx.stroke();
+ if(pinch){ctx.strokeStyle="rgba(255,255,255,.95)";ctx.lineWidth=2.2;ctx.beginPath();ctx.arc(ox,oy,radius+5,0,Math.PI*2);ctx.stroke()}
+ ctx.restore();
+ // All 21 points glow; thumb tip and index tip are slightly larger.
+ lm.forEach((p,i)=>{const x=p.x*canvas.width,y=p.y*canvas.height,r=(i===4||i===8)?5.2:4;
+  ctx.beginPath();ctx.arc(x,y,r+3,0,Math.PI*2);ctx.fillStyle="rgba(0,245,255,.22)";ctx.shadowColor="#00f5ff";ctx.shadowBlur=18;ctx.fill();
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=(i===4||i===8)?"#fff1a6":"#baffff";ctx.shadowBlur=12;ctx.fill();
+  ctx.beginPath();ctx.arc(x,y,Math.max(1.3,r*.38),0,Math.PI*2);ctx.fillStyle="#ffffff";ctx.shadowBlur=4;ctx.fill();
+ });
+ ctx.restore();
+}
+function renderRecipe(){
+ const r=recipes[currentRecipe];$("potionName").textContent=r.name;$("potionFact").textContent=r.fact;$("bottle").style.filter=`drop-shadow(0 0 15px ${r.color})`;
+ $("recipeList").innerHTML=r.steps.map((s,i)=>`<div class="recipe ${i<step?'done':i===step?'active':''}"><div class="num">${i<step?'✓':s[2]}</div><div><b>${i+1}. ${s[1]}</b><small>${({open:"OPEN PALM",pinch:"PINCH",fist:"FIST",peace:"PEACE SIGN"})[s[0]]}</small></div></div>`).join("");
+ $("progress").style.width=((step/4)*100)+"%";
+}
+function setMessage(text){$("message").textContent=text}
+function beep(freq=660,duration=.12){if(!soundOn)return;try{const ac=new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=freq;o.type="sine";g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+duration);o.stop(ac.currentTime+duration);o.onended=()=>ac.close()}catch(e){}}
+function updateGesture(g){
+ const labels={none:["No hand detected","Show one hand clearly to the camera."],open:["OPEN PALM","Spread your fingers to draw a magic circle."],pinch:["PINCH","Bring your thumb and index finger together."],fist:["FIST","Close your hand to stir the potion."],peace:["PEACE SIGN","Raise your index and middle fingers to seal."],unknown:["Gesture not recognised","Try an open palm, pinch, fist, or peace sign."]};
+ $("gestureName").textContent=labels[g][0];$("gestureHelp").textContent=labels[g][1];$("dot").classList.toggle("on",g!=="none");
+ document.querySelectorAll(".gesture").forEach(el=>el.classList.remove("active"));if(g!=="none"&&g!=="unknown")$("g-"+g)?.classList.add("active");
+}
+function handleGesture(g){
+ if(!running||gameOver)return;
+ if(g===stableGesture)stableFrames++;else{stableGesture=g;stableFrames=1;holdStart=performance.now()}
+ if(g==="none"||g==="unknown"){holdStart=performance.now();return}
+ const r=recipes[currentRecipe], needed=r.steps[step][0], now=performance.now();
+ if(g===needed){
+  const elapsed=now-holdStart;
+  setMessage(`Correct gesture! Hold steady… ${Math.min(100,Math.floor(elapsed/8))}%`);
+  if(elapsed>850&&now-lastLockedAt>1200){lastLockedAt=now;step++;score+=25; $("score").textContent=score;beep(740,.16);renderRecipe();
+   if(step>=4){potionsDone++;score+=75;$("score").textContent=score;$("potions").textContent=`${potionsDone} / 3`;beep(950,.28);$("cauldron").textContent="✨⚗️✨";
+    if(potionsDone>=3){finish(true);return}
+    currentRecipe=potionsDone;step=0;setMessage(`${r.name} brewed! +75 bonus. Next: ${recipes[currentRecipe].name}.`);$("stageTitle").textContent="Potion complete!";renderRecipe();
+   }else{setMessage(`Excellent! ${r.steps[step-1][1]} complete. Next: ${r.steps[step][1]}.`);$("cauldron").textContent=["⚗️","🫧","🌀","✨"][step];}
+   holdStart=now;
+  }
+ }else{setMessage(`The spellbook needs: ${r.steps[step][1]}. Try ${needed.toUpperCase()}.`)}
+}
+async function startGame(){
+ try{
+  $("startBtn").disabled=true;$("startBtn").textContent="Loading hand magic…";
+  if(!landmarker){const vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");landmarker=await HandLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",delegate:"GPU"},runningMode:"VIDEO",numHands:1,minHandDetectionConfidence:.55,minHandPresenceConfidence:.5,minTrackingConfidence:.5});}
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false});video.srcObject=stream;await video.play();
+  running=true;gameOver=false;$("cameraLabel").textContent="Camera live · hand tracking on";$("startBtn").textContent="Camera Active";$("stageTitle").textContent="The ritual begins";setMessage("Make an OPEN PALM and hold it steady to begin the potion.");$("overlay").classList.add("hidden");
+  if(!timer)timer=setInterval(()=>{if(!running||gameOver)return;seconds--;$("time").textContent=seconds;if(seconds<=0)finish(false)},1000);
+  requestAnimationFrame(loop);
+ }catch(e){console.error(e);$("startBtn").disabled=false;$("startBtn").textContent="Try Camera Again";setMessage("Could not start camera or hand tracking. Open this page on HTTPS/localhost, allow camera permission, and check your internet connection.");$("cameraLabel").textContent="Camera unavailable";}
+}
+function loop(){
+ if(!running||gameOver)return;
+ if(video.readyState>=2&&video.currentTime!==lastVideoTime){
+  lastVideoTime=video.currentTime;
+  const result=landmarker.detectForVideo(video,performance.now());
+  const lm=result.landmarks?.[0];
+  drawHand(lm);const g=classify(lm);updateGesture(g);handleGesture(g);
+ }requestAnimationFrame(loop);
+}
+function finish(won){
+ gameOver=true;running=false;if(timer){clearInterval(timer);timer=null}if(stream)stream.getTracks().forEach(t=>t.stop());$("cameraLabel").textContent="Quest ended";$("stageTitle").textContent=won?"Grand Alchemist!":"Time’s up!";$("cauldron").textContent=won?"🏆":"💫";setMessage(won?`You brewed all three potions with ${score} points!`:`You brewed ${potionsDone} of 3 potions. Score: ${score}. Try again to master the gestures.`);$("startBtn").disabled=false;$("startBtn").textContent="Play Again";beep(won?990:300,.3);$("overlay").classList.remove("hidden");$("overlay").querySelector("h1").textContent=won?"Grand Alchemist!":"The Trial Awaits";$("overlay").querySelector("p").innerHTML=won?`You brewed all three potions!<br><br><b>Final score: ${score}</b><br>Ready for another magical trial?`:`You brewed ${potionsDone} of 3 potions.<br><br><b>Score: ${score}</b><br>Keep your hand in view and hold each gesture steadily.`;$("beginBtn").textContent="Try Again";
+}
+function restart(){
+ running=false;gameOver=false;if(timer){clearInterval(timer);timer=null}if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;seconds=60;score=0;step=0;currentRecipe=0;potionsDone=0;holdStart=0;lastLockedAt=0;stableGesture="";stableFrames=0;
+ $("score").textContent="0";$("time").textContent="60";$("potions").textContent="0 / 3";$("progress").style.width="0%";$("cauldron").textContent="⚗️";$("startBtn").disabled=false;$("startBtn").textContent="Start Camera & Play";$("cameraLabel").textContent="Camera offline";canvas.width=canvas.width;updateGesture("none");renderRecipe();$("stageTitle").textContent="Your cauldron awaits";setMessage("Start the camera, then make an OPEN PALM to draw the magic circle.");$("overlay").classList.remove("hidden");$("overlay").querySelector("h1").textContent="The Alchemist’s Trial";$("beginBtn").textContent="Enter the Alchemy Lab";
+}
+$("beginBtn").addEventListener("click",()=>{if(gameOver)restart();else $("overlay").classList.add("hidden");if(!running)startGame()});
+$("startBtn").addEventListener("click",startGame);$("restartBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",()=>{soundOn=!soundOn;$("soundBtn").textContent=soundOn?"🔊 Sound: On":"🔇 Sound: Off";if(soundOn)beep()});
+renderRecipe();
+</script>
+</body>
+</html>
