@@ -162,7 +162,7 @@ function updateLiveGuide(){
  let icon=c.icon,title=c.title,text=c.text;
  el.innerHTML=`<div class="guideTop"><div class="guideIcon">${icon}</div><div><div class="guideTitle">${title}</div><div class="guideText">${text}</div></div></div><div class="guideSteps">${c.steps.map((x,i)=>`<div class="guideStep ${i===c.active?'active':''}"><b>${x[0]}</b>${x[1]}</div>`).join("")}</div>`;
 }
-function startMini(m){stop();mode=m;score=0;time=60;streak=0;round=0;duelResult=false;active=false;playerScores=[0,0];grabbed=false;prevPose="";grabX=.5;grabY=.5;repPose="";repSince=0;repCount=0;foodFactIndex=0;$("home").classList.add("hidden");$("play").classList.add("active");const titles={sort:"Ball Sorter",healthy:"Healthy Sorter",twosort:"Two-Player Sorter",grab:"Grab & Drop",duel:"Two-Hand Duel"};$("gameTitle").textContent=titles[mode];$("modeTag").textContent={sign:"Alphabet handshape practice",sort:"Fingertip accuracy",healthy:"Nutrition learning",twosort:"Cooperative competition",grab:"Pinch control",duel:"Two-hand challenge"}[mode];$("miniScore").textContent=score;$("miniTime").textContent=time;$("miniStreak").textContent=streak;$("camStart").disabled=false;$("camStart").textContent="Start Camera & Play";$("miniMsg").textContent="Press Start Camera to begin.";paintBoard();updateLiveGuide();if(["sort","healthy","twosort"].includes(mode))moveBalls();}
+function startMini(m){stop();mode=m;score=0;time=60;streak=0;round=0;duelResult=false;active=false;playerScores=[0,0];grabbed=false;prevPose="";grabX=.5;grabY=.5;repPose="";repSince=0;repCount=0;foodFactIndex=0;$("home").classList.add("hidden");$("play").classList.add("active");const titles={sort:"Ball Sorter",healthy:"Healthy Sorter",twosort:"Two-Player Sorter",grab:"Grab & Drop",duel:"Two-Hand Duel"};$("gameTitle").textContent=titles[mode];$("modeTag").textContent={sort:"Fingertip accuracy",healthy:"Nutrition learning",twosort:"Cooperative competition",grab:"Pinch control",duel:"Two-hand challenge"}[mode];$("miniScore").textContent=score;$("miniTime").textContent=time;$("miniStreak").textContent=streak;$("camStart").disabled=false;$("camStart").textContent="Start Camera & Play";$("miniMsg").textContent="Press Start Camera to begin.";paintBoard();updateLiveGuide();if(["sort","healthy","twosort"].includes(mode))moveBalls();}
 function openPotion(){location.href="potion-lab.html"}
 function goHome(){stop();$("play").classList.remove("active");$("home").classList.remove("hidden")}
 function resetMini(){stop();startMini(mode)}
@@ -256,22 +256,4 @@ Object.assign(window, { openPotion, startMini, goHome, resetMini, startTracking 
 
 
 
-function shuffleSignLetters(){
-  signOrder = [...GUATEMALA_SIGN_LETTERS];
-  for(let i=signOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[signOrder[i],signOrder[j]]=[signOrder[j],signOrder[i]];}
-  signIndex=0; renderSignLetters();
-}
-function renderSignLetters(){
-  const letter=signOrder[signIndex];
-  const letterEl=document.getElementById('signLetter');
-  const progress=document.getElementById('signProgress');
-  const answer=document.getElementById('signAnswer');
-  if(!letterEl)return;
-  letterEl.textContent=letter;progress.textContent=`Letter ${signIndex+1} of ${signOrder.length}`;
-  answer.textContent='Try to identify the handshape on the chart.';
-  document.getElementById('signLetterGrid').innerHTML=signOrder.map((l,i)=>`<div class="signLetterTile ${i===signIndex?'current':''}">${l}<small>${i===signIndex?'CURRENT':i+1}</small></div>`).join('');
-}
-function nextSignLetter(){if(signIndex>=signOrder.length-1){shuffleSignLetters();return;}signIndex++;renderSignLetters();}
-function showSignAnswer(){const l=signOrder[signIndex];document.getElementById('signAnswer').textContent=`Find “${l}” on the supplied Guatemalan manual alphabet chart. The chart includes the handshape and movement cues where shown.`;}
-shuffleSignLetters();
 </script></body></html>

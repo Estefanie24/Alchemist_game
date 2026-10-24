@@ -1,17 +1,20 @@
 Arcane Alchemist updated build
 
-Changes:
-- Reordered menu: Arcane Alchemist, Guatemala Sign Language, Ball Sorter, Two-Hand Duel, Healthy Sorter, Two-Player Sorter, Grab & Drop.
-- Added camera-overlay target markers and visible balls/food/orbs for the sorting and grab games.
-- Improved hand-shape classification for peace/scissors and made duel countdown start when two hands are visible.
-- Added Guatemala alphabet camera practice with hand visibility, basic pose-classification, and steadiness feedback. This is an approximate practice aid, not a validated letter-by-letter sign-language classifier; movement-dependent signs and some orientations cannot be confirmed.
-- Removed Hand Rehab Coach.
-- Removed Copy the Gesture from the main game menu as requested.
+Current menu order:
+1. Arcane Alchemist
+2. Ball Sorter
+3. Two-Hand Duel
+4. Healthy Sorter
+5. Two-Player Sorter
+6. Grab & Drop
 
-Deployment: upload all files and the full assets folder, preserving the relative paths. Test over HTTPS, allow camera permission, and use good lighting.
+Temporarily removed: Guatemala Sign Language. Copy the Gesture and Hand Rehab Coach are also removed.
 
+Controls:
+- Ball Sorter: use the index fingertip to reach the red/blue target zones shown over the camera view.
+- Healthy Sorter: use the index fingertip to reach the nourishing-food or treat target zones shown over the camera view.
+- Two-Hand Duel: show rock, paper, or scissors with both hands and hold them through the countdown.
+- Two-Player Sorter: keep both hands visible; each hand steers toward its indicated player target.
+- Grab & Drop: pinch thumb and index finger while the cursor is over the orb, keep pinching to move it, then open the fingers over a target to release.
 
-Temporary change: Guatemala Sign Language has been removed from the home menu and standalone section. Copy the Gesture remains removed. Sorter and Grab & Drop instructions now explain the camera-overlay targets and pinch/release controls.
-
-
-Latest update: Guatemala Sign Language is temporarily hidden/removed from the home page. Ball and food targets are drawn over the camera feed and their floating markers speed up as the round progresses. Grab & Drop instructions now describe pinch-to-grab, drag while pinching, and open fingers to release. Two-Player Sorter uses the upper-left and lower-right camera targets.
+Deployment: upload index.html, potion-lab.html, and the full assets folder, preserving relative paths. Test over HTTPS, allow camera permission, and use good lighting. Camera overlay, gesture thresholds, and mobile performance still require live-device testing.
