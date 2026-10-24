@@ -32,7 +32,3 @@ Notes
 
 USER-PROVIDED ART INTEGRATION
 The home library now displays the supplied Arcane Alchemist interface reference and provided fantasy images in the game cards. The supplied ice mage, rogue alchemist character sheets, crystal sanctum, and moonlit river are copied into assets/ and used by the arcade and Potion Lab. Keep the assets folder beside both HTML files when deploying.
-
-
-NEW ART INTEGRATION (October 2026)
-Added your new art files under assets/: elemental-scrolls.jpg, alchemist-workbench.jpg, gesture-reference-cards.jpg, potion-bottle-sheet.jpg, potion-rack.jpg, cauldron-workbench.jpg, and gesture-technique-guide.jpg. These are used in the Potion Lab, game cards, and Gesture Grimoire. Keep the entire assets folder beside index.html and potion-lab.html.

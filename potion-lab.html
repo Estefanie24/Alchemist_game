@@ -16,7 +16,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 main{max-width:1450px;margin:auto;padding:18px;display:grid;grid-template-columns:minmax(220px,290px) minmax(300px,1fr) minmax(220px,290px);gap:16px}
 .panel{background:var(--panel);border:1px solid #e9c17655;border-radius:18px;padding:17px;box-shadow:0 12px 40px #0005;min-width:0}.panel h2{margin:0 0 13px;color:var(--gold);font-size:21px}.muted{color:#c4b8e5;font:13px/1.5 system-ui}
 .recipe{display:flex;gap:10px;align-items:flex-start;margin:13px 0;padding:10px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff12}.recipe .num{font-size:23px;width:34px;height:34px;display:grid;place-items:center;background:#332451;border-radius:10px}.recipe.done{border-color:#6ff8f077;background:#123a3977}.recipe.active{border-color:var(--gold);box-shadow:0 0 16px #f4c87922}.recipe b{display:block;margin-bottom:4px}.recipe small{color:#c4b8e5;font:12px system-ui}
-.stage{position:relative;min-height:480px;overflow:hidden;border-radius:20px;border:1px solid #d9b56a88;background:linear-gradient(180deg,rgba(13,7,28,.22),rgba(13,7,28,.88)),url('assets/cauldron-workbench.jpg') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.stage{position:relative;min-height:480px;overflow:hidden;border-radius:20px;border:1px solid #d9b56a88;background:linear-gradient(180deg,rgba(13,7,28,.22),rgba(13,7,28,.88)),url('potion-sanctum.jpg') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .stage:before,.stage:after{content:"✦  ·  ✧  ·  ✦";position:absolute;color:#e6c77eaa;font-size:25px;letter-spacing:18px;pointer-events:none;z-index:1}.stage:before{top:15px}.stage:after{bottom:15px}
 .moon{font-size:38px;filter:drop-shadow(0 0 14px #86e9ff);z-index:2}.stage>*{z-index:2}.stage:after{z-index:1}.cauldron{font-size:clamp(95px,14vw,160px);line-height:1.2;filter:drop-shadow(0 12px 18px #05030c);margin:5px;background:rgba(14,8,31,.36);border-radius:50%;padding:0 22px}.potion{height:9px;width:min(75%,360px);border-radius:10px;background:#ffffff22;overflow:hidden;border:1px solid #ffffff33}.potion span{display:block;height:100%;width:0;background:linear-gradient(90deg,#49f5de,#9d77ff,#f4c879);transition:width .4s}
 .stageTitle{font-size:clamp(23px,3vw,34px);text-align:center;color:#fff0c9;margin:8px 0}.status{font:14px/1.5 system-ui;text-align:center;color:#d8d0ef;max-width:460px;min-height:42px}.stageBtns{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:14px}
@@ -27,7 +27,16 @@ main{max-width:1450px;margin:auto;padding:18px;display:grid;grid-template-column
 footer{text-align:center;padding:0 16px 24px;color:#a99dc8;font:12px/1.5 system-ui}
 #overlay{position:fixed;inset:0;background:#080615dd;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}#overlay.hidden{display:none}.modal{max-width:520px;background:#1b1435;border:1px solid var(--gold);border-radius:20px;padding:28px;text-align:center;box-shadow:0 0 60px #5b36a955}.modal h1{color:var(--gold);margin-top:0}.modal p{font:14px/1.7 system-ui;color:#ded6f3}.modal .big{font-size:44px}
 @media(max-width:1000px){main{grid-template-columns:1fr 1fr}.stage{grid-column:1/-1;grid-row:1;min-height:390px}.left{grid-column:1}.right{grid-column:2}}
-@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.stats{width:100%}.stat{flex:1}main{display:flex;flex-direction:column;padding:10px}.stage{order:0;min-height:380px}.left{order:1}.right{order:2}.gestures{grid-template-columns:repeat(2,1fr)}.panel{padding:14px}}
+@media(max-width:600px){
+header{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 12px}.brand{font-size:21px}.sub{font-size:10px}.stats{width:100%;gap:6px}.stat{flex:1;min-width:0;padding:6px 4px}.stat strong{font-size:19px}
+main{display:flex;flex-direction:column;padding:8px;gap:10px}
+/* Put camera and live instruction first so the player does not scroll between them. */
+.right{order:0}.stage{order:1;min-height:0;padding:14px 10px}.left{order:2}
+.panel{padding:12px;border-radius:14px}.panel h2{font-size:18px;margin-bottom:8px}.magePortrait{display:none}.cameraWrap{aspect-ratio:4/3;max-height:42svh;min-height:210px}.detect{margin:7px 0;padding:8px}.right>p.muted{margin:7px 0;font-size:12px}.right>#soundBtn{padding:9px}
+.mobileStep{display:block;position:sticky;top:0;z-index:5;padding:10px 12px;margin:0 0 9px;border:1px solid var(--gold);border-radius:12px;background:#1b1435f5;box-shadow:0 5px 18px #0008;font:14px/1.35 system-ui;color:#fff}.mobileStep strong{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}.mobileStep small{display:block;color:#c4b8e5;margin-top:3px}
+.gestures{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:10px}.gesture{padding:7px 2px;font-size:10px}.gesture span{font-size:22px;margin-bottom:3px}.stageTitle{font-size:23px;margin:5px 0}.cauldron{font-size:82px;margin:0}.moon{font-size:25px}.status{min-height:0;font-size:13px;margin:7px 0}.stageBtns{margin-top:8px}.stageBtns button{padding:10px 12px;font-size:14px}.recipe{margin:8px 0;padding:8px;gap:8px}.recipe b{font-size:14px}.recipe small{font-size:11px}.potionCard{margin-top:10px;padding:10px}.bottle{font-size:45px}
+}
+@media(min-width:601px){.mobileStep{display:none}}
 .gestureLabel{font-size:clamp(28px,5vw,48px);font-weight:950;letter-spacing:.07em;text-align:center;color:#baffff;text-shadow:0 0 6px #00f5ff,0 0 16px #00f5ff,0 0 30px #00aaff;margin:12px 0;padding:10px 6px;border:1px solid #00f5ff66;border-radius:12px;background:#00f5ff18}.gestureLabel.nohand{color:#ffb5c0;text-shadow:0 0 8px #ff3158,0 0 18px #ff3158;border-color:#ff315866}</style>
 </head>
 <body>
@@ -56,7 +65,7 @@ footer{text-align:center;padding:0 16px 24px;color:#a99dc8;font:12px/1.5 system-
     </div>
   </section>
   <section class="panel right">
-    <h2>🔮 Hand Portal</h2><div class="magePortrait characterPortrait"><img src="assets/elemental-scrolls.jpg" alt="Provided hooded rogue alchemist character art"><div><b>The Rogue Alchemist</b><small>Your playable potion master · Arcane craft</small></div></div>
+    <h2>🔮 Hand Portal</h2><div class="mobileStep" id="mobileStep"><strong>STEP 1 OF 4 · 🖐️ OPEN PALM</strong>Make an open palm and hold it steady.<small>Keep this instruction visible while using the camera.</small></div><div class="magePortrait characterPortrait"><img src="rogue-alchemist-portrait.jpg" alt="Provided hooded rogue alchemist character art"><div><b>The Rogue Alchemist</b><small>Your playable potion master · Arcane craft</small></div></div>
     <div class="cameraWrap"><video id="video" autoplay playsinline muted><div id="gestureLabel" class="gestureLabel nohand">NO HAND</div></video><canvas id="canvas"></canvas><div class="cameraLabel" id="cameraLabel">Camera offline</div></div>
     <div class="detect"><span class="dot" id="dot"></span><b id="gestureName">No hand detected</b><div class="muted" id="gestureHelp">Show one hand clearly to the camera.</div></div>
     <p class="muted">Best results: bright light on your hand, whole hand visible, camera at arm’s length. Allow camera access when asked.</p>
@@ -138,7 +147,9 @@ function drawHand(lm){
  ctx.restore();
 }
 function renderRecipe(){
- const r=recipes[currentRecipe];$("potionName").textContent=r.name;$("potionFact").textContent=r.fact;$("bottle").style.filter=`drop-shadow(0 0 15px ${r.color})`;
+ const r=recipes[currentRecipe];
+ const mobileStep=$("mobileStep");if(mobileStep){const current=r.steps[Math.min(step,3)];const names={open:"OPEN PALM",pinch:"PINCH",fist:"FIST",peace:"PEACE SIGN"};const short={open:"Spread your fingers and hold steady.",pinch:"Touch thumb and index fingertip together.",fist:"Close your hand and hold steady to stir.",peace:"Raise index and middle fingers to seal."};mobileStep.innerHTML=`<strong>STEP ${Math.min(step+1,4)} OF 4 · ${current[2]} ${names[current[0]]}</strong>${current[1]}<small>${short[current[0]]}</small>`;}
+ $("potionName").textContent=r.name;$("potionFact").textContent=r.fact;$("bottle").style.filter=`drop-shadow(0 0 15px ${r.color})`;
  $("recipeList").innerHTML=r.steps.map((s,i)=>`<div class="recipe ${i<step?'done':i===step?'active':''}"><div class="num">${i<step?'✓':s[2]}</div><div><b>${i+1}. ${s[1]}</b><small>${({open:"OPEN PALM",pinch:"PINCH",fist:"FIST",peace:"PEACE SIGN"})[s[0]]}</small></div></div>`).join("");
  $("progress").style.width=((step/4)*100)+"%";
 }
