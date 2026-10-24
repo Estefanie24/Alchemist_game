@@ -8,6 +8,13 @@
 .spellStage{min-height:290px;padding:18px 14px;border:1px solid #78eaff88;border-radius:14px;background:linear-gradient(180deg,rgba(4,9,25,.18),rgba(4,9,25,.66)),url('moonlit-forest.jpg') center/cover no-repeat;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:inset 0 0 35px #02040a88}.spellStage .biggest{filter:drop-shadow(0 0 18px #65dfff);margin:6px}.spellStage .hint{max-width:420px}@media(max-width:760px){#play{padding:10px}.board,.cameraPanel{padding:12px}.gameLayout{display:flex;flex-direction:column}.cameraPanel{order:1;width:100%}.board{order:2;width:100%}.camera{max-height:32svh;aspect-ratio:4/3}.liveInstruction{padding:8px;margin-bottom:7px}.guideIcon{width:40px;height:40px;flex-basis:40px;font-size:25px}.guideSteps{margin-top:6px}.guideStep{padding:4px 2px;font-size:9px}.guideStep b{font-size:17px}.arena{height:250px!important}.playhead{position:sticky;top:0;z-index:5;background:#100b22;padding:6px 0}.msg{min-height:36px}header{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr}.wide{grid-column:auto}.wide .inner{grid-template-columns:1fr}.gameLayout{grid-template-columns:1fr}.wrap{padding-top:18px}.card{min-height:230px}}
 
 .signSection{margin:32px 0 8px;padding:clamp(16px,3vw,28px);border:1px solid #70bff088;border-radius:20px;background:linear-gradient(145deg,#102b4b,#12132c 70%);box-shadow:0 16px 40px #0005}.signSection h2{font:700 clamp(24px,4vw,34px) Georgia,serif;color:#9ddcff;margin:0 0 8px}.signSection>p{color:#d7e9fa;line-height:1.6}.signPractice{display:grid;grid-template-columns:minmax(220px,.65fr) minmax(0,1.35fr);gap:18px;align-items:start}.signPrompt{border:1px solid #79cfff77;border-radius:15px;padding:18px;text-align:center;background:#081a31}.signSmall{font-size:12px;letter-spacing:.15em;color:#9ddcff;font-weight:800}.signLetter{font-size:clamp(100px,18vw,170px);line-height:1.05;font-weight:900;color:#fff;text-shadow:0 0 22px #39aaff}.signProgress{color:#d4e7ff;margin:4px 0 14px}.signActions{display:grid;gap:8px}.signAnswer{min-height:48px;margin-top:12px;color:#b6edff;font-size:14px;line-height:1.5}.signChart img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #8dd8ff66;background:#fff}.signChart p{font-size:12px;color:#b8cfe7;line-height:1.5}.signLetterGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:8px;margin-top:18px}.signLetterTile{padding:10px 4px;text-align:center;border:1px solid #79cfff55;border-radius:10px;background:#ffffff0b;color:#eff9ff;font-size:20px;font-weight:800}.signLetterTile.current{border-color:#a7f6ff;background:#17496a;box-shadow:0 0 14px #3bd9ff55}.signLetterTile small{display:block;font-size:9px;color:#a8c9e6;font-weight:500}@media(max-width:760px){.signPractice{grid-template-columns:1fr}.signChart{order:-1}.signLetterGrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+ 
+.sign-round{text-align:center}
+.signExampleWrap{position:relative;max-width:360px;margin:14px auto;border:2px solid #d9b56d;border-radius:16px;overflow:hidden;background:#10102a;min-height:190px;display:grid;place-items:center}
+.signExampleVideo{width:100%;max-height:250px;object-fit:contain;background:#111}
+.signExampleFallback{display:none;color:#f8e8b7;padding:22px;font-size:18px}
+.signCountdown{font-size:clamp(28px,7vw,48px);font-weight:800;color:#ffe08a;margin:12px}
+.signCountdown.ready{color:#8dffca}
 </style></head><body>
 <header><div><div class="brand">✦ ARCANE ALCHEMIST</div><div class="sub">Hand Magic Arcade · Level-up collection</div></div><div class="pill">📷 Camera-powered mini-games</div></header>
 <section id="home" class="wrap"><div class="intro"><img class="intro-art" src="arcane-ui-reference.png" alt="Provided Arcane Alchemist fantasy game interface reference"><h1>Master the Magic in Your Hands</h1><p>Choose a challenge, allow camera access, and use real hand gestures to brew potions, practise the Guatemalan Sign Language manual alphabet, sort enchanted orbs, duel a rival, learn about nutrition, play together, and grab and drop objects.</p></div>
@@ -151,13 +158,56 @@ function drawGameOverlay(){
   label('🇬🇹 LETTER: '+(signOrder[signIndex]||'a').toUpperCase(),w*.5,h*.12,'#a7e5ff');
  }
 }
+function startSignRound(){
+  signRoundReady=false;
+  if(signRoundTimer) clearTimeout(signRoundTimer);
+  const letter=(signOrder[signIndex]||'a').toLowerCase();
+  const video=document.getElementById('signExampleVideo');
+  const fallback=document.getElementById('signExampleFallback');
+  const count=document.getElementById('signCountdown');
+  const fb=document.getElementById('signCameraFeedback');
+  if(video){
+    video.pause(); video.style.display='block';
+    video.src=`assets/guatemala-sign-videos/letra_${letter}.mp4`;
+    video.onerror=()=>{video.style.display='none'; if(fallback)fallback.style.display='block';};
+    video.onloadeddata=()=>{video.style.display='block';if(fallback)fallback.style.display='none';};
+    video.load(); video.play().catch(()=>{});
+  }
+  if(fallback) fallback.innerHTML=`No demonstration video is available for <b>${letter.toUpperCase()}</b>. Use the alphabet chart to review this sign.`;
+  if(count){count.classList.remove('ready');count.textContent='Study the sign';}
+  if(fb)fb.textContent='Watch the sign example first. The 3-second countdown will begin automatically.';
+  let n=3;
+  signRoundTimer=setTimeout(()=>{
+    if(count)count.textContent='Repeat in '+n;
+    if(fb)fb.textContent='Get your hand ready in front of the camera.';
+    const tick=()=>{
+      n--;
+      if(n>0){if(count)count.textContent='Repeat in '+n; signRoundTimer=setTimeout(tick,1000);}
+      else {
+        signRoundReady=true;
+        if(video){video.pause();video.style.display='none';}
+        if(fallback)fallback.style.display='none';
+        if(count){count.textContent='YOUR TURN!';count.classList.add('ready');}
+        if(fb)fb.textContent='Your turn: repeat the sign now and hold your hand steady.';
+      }
+    };
+    signRoundTimer=setTimeout(tick,1000);
+  },2500);
+}
 function paintBoard(){
  if(mode==="sort"||mode==="healthy"||mode==="twosort"){
   const two=mode==="twosort",healthy=mode==="healthy";
   const leftLabel=two?"PLAYER 1":healthy?"🥗 NOURISH":"🔴 RED";
   const rightLabel=two?"PLAYER 2":healthy?"🍪 SOMETIMES":"🔵 BLUE";
   $("boardContent").innerHTML=`<div class="arena" id="arena" style="height:290px"><div class="sortbox r" style="left:8px;right:auto;width:100px;height:65px">${leftLabel}</div><div class="sortbox b" style="right:8px;width:100px;height:65px">${rightLabel}</div><div class="ball red" id="redball" style="top:45%;left:35%">${healthy?'🍎':'🔴'}</div><div class="ball blue" id="blueball" style="top:65%;left:55%">${healthy?'🍪':'🔵'}</div>${two?'<div style="position:absolute;top:0;bottom:0;left:50%;border-left:1px dashed #fff7"></div>':''}</div><p class="hint">${two?'Each player uses one hand. Player 1 aims for the left/top target; Player 2 aims for the right/bottom target. Keep both hands visible.':healthy?'Sort fruit, vegetables, and other nourishing foods into the green basket; put treats into the purple basket. Read the fact after each successful sort.':'Move your index fingertip into the matching target zone: red on the left/top, blue on the right/bottom. Hold briefly to score.'}</p>${healthy?'<p id="nutritionFact" class="hint" style="border:1px solid #8be0a4;border-radius:10px;padding:12px;background:#12301f">🥬 Nutrition fact will appear here after your first sort.</p>':''}${two?'<div class="scoreline"><span class="pill">Player 1: <b id="p1score">0</b></span><span class="pill">Player 2: <b id="p2score">0</b></span></div>':''}`;
- }else if(mode==="sign"){$("boardContent").innerHTML=`<div class="spellStage"><div class="signSmall">FORM THIS GUATEMALAN MANUAL LETTER</div><div class="signLetter" id="signGameLetter">${signOrder[signIndex]||'a'}</div><p id="signCameraFeedback" class="hint" style="text-align:center;color:#fff">Start the camera, hold the sign in view, and keep your hand steady.</p><button class="btn" onclick="nextSignLetter();document.getElementById('signGameLetter').textContent=signOrder[signIndex]">Next random letter ↻</button><p class="hint">Camera feedback is an approximate handshape/steadiness aid, not a certified sign-language assessment.</p></div>`
+ }else if(mode==="sign"){$("boardContent").innerHTML=`<div class="spellStage sign-round">
+<div class="signSmall">GUATEMALA SIGN LANGUAGE · RANDOM PRACTICE</div>
+<div class="signLetter" id="signGameLetter">${(signOrder[signIndex]||'a').toUpperCase()}</div>
+<div class="signExampleWrap" id="signExampleWrap"><video id="signExampleVideo" class="signExampleVideo" autoplay muted playsinline loop></video><div class="signExampleFallback" id="signExampleFallback">Study the sign for <b>${(signOrder[signIndex]||'a').toUpperCase()}</b> using the alphabet chart below.</div></div>
+<div id="signCountdown" class="signCountdown" aria-live="polite">Study the sign</div>
+<p id="signCameraFeedback" class="hint" style="text-align:center;color:#fff">Watch the example first. Your 3-second countdown will begin automatically.</p>
+<button class="btn" onclick="nextSignLetter()">Next random letter ↻</button>
+<p class="hint">After the countdown, repeat the sign in the camera view. Feedback checks hand visibility, an approximate handshape, and steadiness; it does not certify the exact Guatemalan sign.</p></div>`; startSignRound();
  }else if(mode==="duel"){$("boardContent").innerHTML=`<div class="biggest" id="duelEmojis">✊　✌️</div><div class="arenaGesture"><div class="choice"><div class="e">✊</div>Rock</div><div class="choice"><div class="e">🖐️</div>Paper</div><div class="choice"><div class="e">✌️</div>Scissors</div></div><p class="hint">Show two valid signs. The game compares the signs after a countdown.</p>`}
  else if(mode==="grab"){$("boardContent").innerHTML=`<div class="arena" id="grabArena" style="height:300px"><div class="sortbox r" style="left:8px;right:auto;width:105px">💎 DROP</div><div class="sortbox b" style="right:8px;width:105px">🌙 DROP</div><div id="grabOrb" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:34px;background:radial-gradient(circle,#fff,#8efcff 35%,#4a50d9 72%,transparent);box-shadow:0 0 28px #55f6ff">🔮</div><div id="grabCursor" style="position:absolute;left:50%;top:50%;width:20px;height:20px;border:2px solid #fff7a5;border-radius:50%;box-shadow:0 0 15px #fff7a5;pointer-events:none"></div></div><p class="hint">Pinch when the cursor is over the orb to grab it. While pinching, move the cursor into either glowing target; release only inside a target to score.</p><p id="grabStatus" class="hint">Orb waiting to be grabbed.</p>`}
  else{$("boardContent").innerHTML=`<div class="spellStage"><div class="biggest" id="targetEmoji">🖐️</div><div style="text-align:center;font-size:22px;color:#fff0b8;text-shadow:0 2px 8px #07101f" id="targetName">OPEN PALM</div><p class="hint" style="text-align:center;color:#f0f4ff;text-shadow:0 1px 5px #06101e">Copy the target gesture and hold it for 1 second.</p></div>`}
@@ -269,7 +319,7 @@ function loop(){
     }
    }
   }
-  if(mode==='sign'){
+  if(mode==='sign' && signRoundReady){
    const fb=$('signCameraFeedback');
    if(!all.length){if(fb)fb.textContent='No hand detected. Bring one hand fully into the camera view.';}
    else {const pose=gs[0];if(fb)fb.textContent=`Camera sees: ${pose}. ${pose!=='OTHER'?'Handshape detected — hold steady for 2 seconds.':'Adjust finger position and keep your palm facing the camera.'}`;
@@ -286,6 +336,7 @@ Object.assign(window, { openPotion, startMini, goHome, resetMini, startTracking 
 // Guatemala Sign Language alphabet practice: shuffle letters for each new round.
 const GUATEMALA_SIGN_LETTERS = [...'abcdefghijklmnñopqrstuvwxyz'];
 let signOrder = [], signIndex = 0;
+let signRoundReady = false, signRoundTimer = null;
 function shuffleSignLetters(){
   signOrder = [...GUATEMALA_SIGN_LETTERS];
   for(let i=signOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[signOrder[i],signOrder[j]]=[signOrder[j],signOrder[i]];}
@@ -301,7 +352,11 @@ function renderSignLetters(){
   answer.textContent='Try to identify the handshape on the chart.';
   document.getElementById('signLetterGrid').innerHTML=signOrder.map((l,i)=>`<div class="signLetterTile ${i===signIndex?'current':''}">${l}<small>${i===signIndex?'CURRENT':i+1}</small></div>`).join('');
 }
-function nextSignLetter(){if(signIndex>=signOrder.length-1){shuffleSignLetters();return;}signIndex++;renderSignLetters();}
+function nextSignLetter(){
+  if(signIndex>=signOrder.length-1){shuffleSignLetters();}else{signIndex++;renderSignLetters();}
+  const gameLetter=document.getElementById('signGameLetter');
+  if(gameLetter){gameLetter.textContent=(signOrder[signIndex]||'a').toUpperCase();startSignRound();}
+}
 function showSignAnswer(){const l=signOrder[signIndex];document.getElementById('signAnswer').textContent=`Find “${l}” on the supplied Guatemalan manual alphabet chart. The chart includes the handshape and movement cues where shown.`;}
 shuffleSignLetters();
 </script></body></html>
