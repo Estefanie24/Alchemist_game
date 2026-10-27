@@ -65,8 +65,8 @@ main{display:flex;flex-direction:column;padding:8px;gap:10px}
     </div>
   </section>
   <section class="panel right">
-    <h2>🔮 Hand Portal</h2><div class="mobileStep" id="mobileStep"><strong>STEP 1 OF 4 · 🖐️ OPEN PALM</strong>Make an open palm and hold it steady.<small>Keep this instruction visible while using the camera.</small></div><div class="cameraGestureGuide" id="cameraGestureGuide"><div class="cameraGuideTitle">CURRENT GESTURE</div><div class="cameraGuideCurrent" id="cameraGuideCurrent">🖐️ OPEN PALM · Draw the magic circle</div><div class="cameraGuideSteps"><span>🖐️ Circle</span><span>🤏 Essence</span><span>✊ Stir</span><span>✌️ Seal</span></div></div><div class="magePortrait characterPortrait"><img src="assets/rogue-alchemist-portrait.jpg" alt="Provided hooded rogue alchemist character art"><div><b>The Rogue Alchemist</b><small>Your playable potion master · Arcane craft</small></div></div>
-    <div class="cameraWrap"><video id="video" autoplay playsinline muted><div id="gestureLabel" class="gestureLabel nohand">NO HAND</div></video><canvas id="canvas"></canvas><div class="cameraLabel" id="cameraLabel">Camera offline</div></div>
+    <h2>🔮 Hand Portal</h2><div class="mobileStep" id="mobileStep"><strong>STEP 1 OF 4 · 🖐️ OPEN PALM</strong>Make an open palm and hold it steady.<small>Keep this instruction visible while using the camera.</small></div><div class="cameraGestureGuide" id="cameraGestureGuide"><div class="cameraGuideTitle">CURRENT GESTURE</div><div class="cameraGuideCurrent" id="cameraGuideCurrent">🖐️ OPEN PALM · Draw the magic circle</div><div class="cameraGuideSteps"><span>🖐️ Circle</span><span>🤏 Essence</span><span>✊ Stir</span><span>✌️ Seal</span></div></div><div class="magePortrait characterPortrait"><img src="rogue-alchemist-portrait.jpg" alt="Provided hooded rogue alchemist character art"><div><b>The Rogue Alchemist</b><small>Your playable potion master · Arcane craft</small></div></div>
+    <div class="cameraWrap"><video id="video" autoplay playsinline muted></video><canvas id="canvas"></canvas><div class="cameraLabel" id="cameraLabel">Camera offline</div></div>
     <div class="detect"><span class="dot" id="dot"></span><b id="gestureName">No hand detected</b><div class="muted" id="gestureHelp">Show one hand clearly to the camera.</div></div>
     <p class="muted">Best results: bright light on your hand, whole hand visible, camera at arm’s length. Allow camera access when asked.</p>
     <button id="soundBtn" style="width:100%">🔊 Sound: On</button>
@@ -169,7 +169,8 @@ function handleGesture(g){
  if(g===needed){
   const elapsed=now-holdStart;
   setMessage(`Correct gesture! Hold steady… ${Math.min(100,Math.floor(elapsed/8))}%`);
-  if(elapsed>850&&now-lastLockedAt>1200){lastLockedAt=now;step++;score+=25; $("score").textContent=score;beep(740,.16);renderRecipe();
+  const ritualHoldMs=Math.min(1350,850+Math.floor((60-seconds)/15)*125);
+  if(elapsed>ritualHoldMs&&now-lastLockedAt>1200){lastLockedAt=now;step++;score+=25; $("score").textContent=score;beep(740,.16);renderRecipe();
    if(step>=4){potionsDone++;score+=75;$("score").textContent=score;$("potions").textContent=`${potionsDone} / 3`;beep(950,.28);$("cauldron").textContent="✨⚗️✨";
     if(potionsDone>=3){finish(true);return}
     currentRecipe=potionsDone;step=0;setMessage(`${r.name} brewed! +75 bonus. Next: ${recipes[currentRecipe].name}.`);$("stageTitle").textContent="Potion complete!";renderRecipe();
@@ -179,6 +180,7 @@ function handleGesture(g){
  }else{setMessage(`The spellbook needs: ${r.steps[step][1]}. Try ${needed.toUpperCase()}.`)}
 }
 async function startGame(){
+ if(running||$("startBtn").disabled)return;
  try{
   $("startBtn").disabled=true;$("startBtn").textContent="Loading hand magic…";
   if(!landmarker){const vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");landmarker=await HandLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",delegate:"GPU"},runningMode:"VIDEO",numHands:1,minHandDetectionConfidence:.55,minHandPresenceConfidence:.5,minTrackingConfidence:.5});}
@@ -186,7 +188,7 @@ async function startGame(){
   running=true;gameOver=false;$("cameraLabel").textContent="Camera live · hand tracking on";$("startBtn").textContent="Camera Active";$("stageTitle").textContent="The ritual begins";setMessage("Make an OPEN PALM and hold it steady to begin the potion.");$("overlay").classList.add("hidden");
   if(!timer)timer=setInterval(()=>{if(!running||gameOver)return;seconds--;$("time").textContent=seconds;if(seconds<=0)finish(false)},1000);
   requestAnimationFrame(loop);
- }catch(e){console.error(e);$("startBtn").disabled=false;$("startBtn").textContent="Try Camera Again";setMessage("Could not start camera or hand tracking. Open this page on HTTPS/localhost, allow camera permission, and check your internet connection.");$("cameraLabel").textContent="Camera unavailable";}
+ }catch(e){console.error(e);running=false;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(video.srcObject)video.srcObject=null;$("startBtn").disabled=false;$("startBtn").textContent="Try Camera Again";setMessage("Could not start camera or hand tracking. Open this page on HTTPS/localhost, allow camera permission, and check your internet connection.");$("cameraLabel").textContent="Camera unavailable";}
 }
 function loop(){
  if(!running||gameOver)return;
@@ -198,10 +200,10 @@ function loop(){
  }requestAnimationFrame(loop);
 }
 function finish(won){
- gameOver=true;running=false;if(timer){clearInterval(timer);timer=null}if(stream)stream.getTracks().forEach(t=>t.stop());$("cameraLabel").textContent="Quest ended";$("stageTitle").textContent=won?"Grand Alchemist!":"Time’s up!";$("cauldron").textContent=won?"🏆":"💫";setMessage(won?`You brewed all three potions with ${score} points!`:`You brewed ${potionsDone} of 3 potions. Score: ${score}. Try again to master the gestures.`);$("startBtn").disabled=false;$("startBtn").textContent="Play Again";beep(won?990:300,.3);$("overlay").classList.remove("hidden");$("overlay").querySelector("h1").textContent=won?"Grand Alchemist!":"The Trial Awaits";$("overlay").querySelector("p").innerHTML=won?`You brewed all three potions!<br><br><b>Final score: ${score}</b><br>Ready for another magical trial?`:`You brewed ${potionsDone} of 3 potions.<br><br><b>Score: ${score}</b><br>Keep your hand in view and hold each gesture steadily.`;$("beginBtn").textContent="Try Again";
+ gameOver=true;running=false;if(timer){clearInterval(timer);timer=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(video.srcObject)video.srcObject=null;$("cameraLabel").textContent="Quest ended";$("stageTitle").textContent=won?"Grand Alchemist!":"Time’s up!";$("cauldron").textContent=won?"🏆":"💫";setMessage(won?`You brewed all three potions with ${score} points!`:`You brewed ${potionsDone} of 3 potions. Score: ${score}. Try again to master the gestures.`);$("startBtn").disabled=false;$("startBtn").textContent="Play Again";beep(won?990:300,.3);$("overlay").classList.remove("hidden");$("overlay").querySelector("h1").textContent=won?"Grand Alchemist!":"The Trial Awaits";$("overlay").querySelector("p").innerHTML=won?`You brewed all three potions!<br><br><b>Final score: ${score}</b><br>Ready for another magical trial?`:`You brewed ${potionsDone} of 3 potions.<br><br><b>Score: ${score}</b><br>Keep your hand in view and hold each gesture steadily.`;$("beginBtn").textContent="Try Again";
 }
 function restart(){
- running=false;gameOver=false;if(timer){clearInterval(timer);timer=null}if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;seconds=60;score=0;step=0;currentRecipe=0;potionsDone=0;holdStart=0;lastLockedAt=0;stableGesture="";stableFrames=0;
+ running=false;gameOver=false;if(timer){clearInterval(timer);timer=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(video.srcObject)video.srcObject=null;seconds=60;score=0;step=0;currentRecipe=0;potionsDone=0;holdStart=0;lastLockedAt=0;stableGesture="";stableFrames=0;
  $("score").textContent="0";$("time").textContent="60";$("potions").textContent="0 / 3";$("progress").style.width="0%";$("cauldron").textContent="⚗️";$("startBtn").disabled=false;$("startBtn").textContent="Start Camera & Play";$("cameraLabel").textContent="Camera offline";canvas.width=canvas.width;updateGesture("none");renderRecipe();$("stageTitle").textContent="Your cauldron awaits";setMessage("Start the camera, then make an OPEN PALM to draw the magic circle.");$("overlay").classList.remove("hidden");$("overlay").querySelector("h1").textContent="The Alchemist’s Trial";$("beginBtn").textContent="Enter the Alchemy Lab";
 }
 $("beginBtn").addEventListener("click",()=>{if(gameOver)restart();else $("overlay").classList.add("hidden");if(!running)startGame()});
